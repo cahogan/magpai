@@ -1,5 +1,21 @@
 {% extends 'core/base.html' %}
-{% block title %}Game{% endblock %}
+{% block title %}{{game.name}}{% endblock %}
 {% block content %}
-<h1>Game</h1>
+    <h1>Game: {{game.name}}</h1>
+    <h2>Question {{ question.order }}</h2>
+    <p>{{ question.clue }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <input type="text" name="answer">
+        <input type="submit" value="Submit">
+    </form>
+    {% if answer %}
+        <p>You guessed: {{ answer }}</p>
+        {% if is_correct %}
+            <p>Correct answer: {{ question.answer }}</p>
+        {% else %}
+            <p>Incorrect! Keep trying.</p>
+        {% endif %}
+    {% endif %}
 {% endblock %}
