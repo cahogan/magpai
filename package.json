@@ -3,10 +3,17 @@
   "version": "0.1.0",
   "description": "Django-powered AI scavenger hunt game",
   "scripts": {
-    "test": "jest"
+    "build": "rollup -c --bundleConfigAsCjs"
   },
   "devDependencies": {
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2"
+  },
+  "dependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
+    "glob": "^10.3.12",
+    "rollup": "^4.16.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.5"
   }
 }
