@@ -1,0 +1,8 @@
+{
+  "name": "magpai",
+  "version": "0.1.0",
+  "description": "Django-powered AI scavenger hunt game",
+  "scripts": {
+    "test": "jest"
+  },
+}
