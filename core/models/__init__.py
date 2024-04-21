@@ -1,2 +1,2 @@
-from .game import *
-from .question import *
+from .game.models import *
+from .question.models import *
