@@ -10,6 +10,9 @@ python = "^3.12"
 django = "^5.0.2"
 pytest = "^8.0.1"
 
+[tool.pytest.ini_options]
+minversion = "6.0"
+python_files = "test_*.py"
 
 [build-system]
 requires = ["poetry-core"]
