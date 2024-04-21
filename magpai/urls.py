@@ -21,4 +21,5 @@ import core.views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", core.views.home),
+    path("game/", core.views.game),
 ]
