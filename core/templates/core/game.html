@@ -1,9 +1,11 @@
 {% extends 'core/base.html' %}
 {% block title %}{{game.name}}{% endblock %}
 {% block content %}
+    {% load static %}
     <h1>Game: {{game.name}}</h1>
     <h2>Question {{ question.order }}</h2>
     <p>{{ question.clue }}</p>
+    <video id="camera-feed"></video>
     <form method="post">
         {% csrf_token %}
         <input type="hidden" name="question_id" value="{{ question.id }}">
@@ -18,4 +20,5 @@
             <p>Incorrect! Keep trying.</p>
         {% endif %}
     {% endif %}
+<script src="{% static 'core/built/game.js' %}" type="text/javascript"></script>
 {% endblock %}
