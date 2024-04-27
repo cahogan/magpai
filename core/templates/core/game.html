@@ -6,10 +6,12 @@
     <h2>Question {{ question.order }}</h2>
     <p>{{ question.clue }}</p>
     <video id="camera-feed"></video>
+    <button id="take-photo">Take photo</button>
+    <canvas id="photo-canvas" class="hidden"></canvas>
     <form method="post">
         {% csrf_token %}
         <input type="hidden" name="question_id" value="{{ question.id }}">
-        <input type="text" name="answer">
+        <input type="hidden" id="photo-input" name="photo" value="">
         <input type="submit" value="Submit">
     </form>
     {% if answer %}
