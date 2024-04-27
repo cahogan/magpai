@@ -1,5 +1,11 @@
 from django.shortcuts import render
 import core.models as models
+import json
+
+
+def check_image_matches(base64_image, correct_answer):
+        return {"is_match": False, "justification":
+                "I'm sorry, I forgot how to output JSON and couldn't make a decision based on the provided image."}
 
 def game(request):
     game = models.Game.objects.get(id=1) # for now
@@ -10,10 +16,12 @@ def game(request):
             "question": questions.first(),
         }
     elif request.method == "POST":
+        photo = request.POST.get("photo")
         question_id = request.POST.get("question_id")
-        answer = request.POST.get("answer")
         question = models.Question.objects.get(id=question_id)
-        is_correct = (answer == question.answer)
+        judge_response = check_image_matches(photo, question.answer)
+        is_correct = judge_response["is_match"]
+        user_answered = True
         if is_correct:
             try:
                 next_question = models.Question.objects.get(game=game, order=question.order + 1)
@@ -22,11 +30,11 @@ def game(request):
             else:
                 question = next_question
                 is_correct = None
-                answer = None
+                user_answered = False
         context = {
             "game": game,
             "question": question,
-            "answer": answer,
+            "answer": user_answered,
             "is_correct": is_correct,
         }
     return render(request, "core/game.html", context)

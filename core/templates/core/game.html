@@ -15,7 +15,6 @@
         <input type="submit" value="Submit">
     </form>
     {% if answer %}
-        <p>You guessed: {{ answer }}</p>
         {% if is_correct %}
             <p>Correct answer: {{ question.answer }}</p>
         {% else %}
