@@ -77,11 +77,24 @@ def game(request, game_id=None):
         game = models.Game.objects.get(id=game_id)
     else:
         game = models.Game.objects.get(id=1) # for now
+
     if request.method == "GET":
-        questions = models.Question.objects.filter(game=game).order_by("order")
+        latest_answer = models.QuestionResponse.objects.filter(user=request.user, question__game=game) \
+                                                   .order_by("-timestamp").first()
+        if latest_answer is not None:
+            if latest_answer.is_correct:
+                try:
+                    current_question = models.Question.objects.get(game=game, order=latest_answer.question.order + 1).first()
+                except models.Question.DoesNotExist:
+                    return render(request, "core/complete.html")
+            else:
+                current_question = models.Question.objects.filter(game=game, order=latest_answer.question.order).first()
+        else:
+            current_question = models.Question.objects.filter(game=game).order_by("order").first()
+
         context = {
             "game": game,
-            "question": questions.first(),
+            "question": current_question,
         }
     elif request.method == "POST":
         photo = request.POST.get("photo")

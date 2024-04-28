@@ -41,5 +41,5 @@ class QuestionResponse(models.Model):
     is_correct = models.BooleanField()
 
     def __str__(self):
-        return f"Response to {self.question} by {self.user}"
+        return f"Response to {self.question} by {self.user} (#{self.id})"
 
