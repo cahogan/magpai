@@ -8,6 +8,9 @@ class Game(models.Model):
 
     id = models.AutoField(primary_key=True)
     
+    # Relationships
+    current_judge = models.ForeignKey("Judge", on_delete=models.CASCADE, blank=True, null=True)
+
     # Attributes
     intro = models.TextField(blank=True, null=True)
     name = models.CharField(max_length=100)
