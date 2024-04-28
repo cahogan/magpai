@@ -2,6 +2,7 @@ from django.shortcuts import render
 import core.models as models
 from openai import OpenAI
 import json
+from django.contrib.auth.decorators import login_required
 
 
 def check_image_matches(base64_image, correct_answer):
@@ -46,6 +47,8 @@ def check_image_matches(base64_image, correct_answer):
     else:
         return json_output
 
+
+@login_required
 def game(request):
     game = models.Game.objects.get(id=1) # for now
     if request.method == "GET":
