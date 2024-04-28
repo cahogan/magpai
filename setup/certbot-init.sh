@@ -25,63 +25,6 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# Function to display usage information
-usage() {
-	echo "Usage: $0 [--dummy] [--staging] [-d <domain>]" 1>&2 
-	echo -e "\t--dummy          Create dummy certificates and don't request any challenges."
-	echo -e "\t--staging        Run certbot with --test-certs option to test without hitting request limit."
-	echo -e "\t-d <domain>		Run certbot for a single domain only."
-	exit 1
-}
-
-# Parse command line options
-while getopts "d:h-:" opt; do
-	case "$opt" in
-		-)
-			case "${OPTARG}" in
-				dummy)
-					echo "Overriding .env to create dummy certificates only."
-					SSL_DUMMY_CERTS_ONLY=1
-					;;
-				staging)
-					echo "Overriding .env to run certbot with --test-only flag."
-					SSL_STAGING=1
-					;;
-				help)
-					usage
-					;;
-				*)
-					echo "Invalid string option $OPTARG." >&2
-			esac
-			;;
-		d)
-            echo "Running for single domain: $OPTARG"
-            DOMAINS=( "${OPTARG}" )
-            ;;
-		h)
-			usage
-			;;
-		:)
-			echo "Option requires an argument" >&2
-			usage
-			;;
-		?)
-			echo "Invalid character option." 1>&2
-			usage
-			;;
-		
-	esac
-done
-shift $((OPTIND -1))
-
-if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
-	echo "### Downloading recommended TLS parameters ..."
-	mkdir -p "$data_path/conf"
-	curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
-	curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
-	echo
-fi
-
 # Create all the dummy certificates together, at the same time, to stop NGINX crashing out because it's missing a set of dummy certificates.
 dummy_domains=()
 for domain in "${DOMAINS[@]}"; do
