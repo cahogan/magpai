@@ -37,6 +37,10 @@ function addImageToForm(imageData: string) {
 
 // Connect the video feed to the video element
 const videoElement = document.getElementById('camera-feed') as HTMLVideoElement
+videoElement.setAttribute('autoplay', '');
+videoElement.setAttribute('muted', '');
+videoElement.setAttribute('playsinline', '');
+
 if (videoElement) {
   showCameraVideoFeed(videoElement)
 }
