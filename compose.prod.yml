@@ -36,8 +36,20 @@ services:
       - 443:443
     volumes:
       - static_volume:/magpai/static
+      - ./docker/nginx/certbot/conf:/etc/letsencrypt
+      - ./docker/nginx/certbot/www:/var/www/certbot
+      - ./docker/nginx/certbot/.secrets:/var/www/.secrets
     depends_on:
       - django
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/data/conf:/etc/letsencrypt
+      - ./certbot/data/www:/var/www/certbot
+      - ./certbot/scripts:/etc/scripts
+    entrypoint: ""
+
 
 volumes:
   static_volume:
