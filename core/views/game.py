@@ -29,6 +29,7 @@ def check_image_matches(base64_image, correct_answer):
             "type": "image_url",
             "image_url": {
                 "url": f"{base64_image}",
+                "detail": "low",
             },
             },
         ],

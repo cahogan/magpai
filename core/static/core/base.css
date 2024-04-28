@@ -1,0 +1,37 @@
+:root {
+    --primary-color: #1E3888;
+    --accent-color: #A67F8E;
+    --secondary-color: #B5B682;
+    --accent-color-transparent: #A67F8E6b;
+    --background-neutral: #f1f1f1;
+  }
+  
+*,
+*::before,
+*::after {
+    font-family: 'Calibri', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-neutral);
+    color: black;
+    line-height: 1.5;
+    height: 100%;
+}
+
+.content {
+    padding: 1rem;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: var(--accent-color) solid 2px;
+    outline-offset: 0.05em;
+    box-shadow: none;
+}
