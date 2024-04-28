@@ -42,15 +42,6 @@ services:
     depends_on:
       - django
 
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certbot/data/conf:/etc/letsencrypt
-      - ./certbot/data/www:/var/www/certbot
-      - ./certbot/scripts:/etc/scripts
-    entrypoint: ""
-
-
 volumes:
   static_volume:
   postgres_volume:
