@@ -3,6 +3,7 @@
     <head>
         {% load static %}
         <link rel="stylesheet" type=text/css href="{% static 'core/base.css' %}">
+        <link rel="stylesheet" type=text/css href="{% static 'core/style.css' %}">
         <link rel="shortcut icon" type="image/svg" href="{% static 'core/favicon.svg' %}"/>
         <title>{% block title %}MagpAI{% endblock %}</title>
     </head>
@@ -13,6 +14,7 @@
                 MAGPAI
             </a>
         </nav>
+        <div style="margin: 5px;">
             {% block content %}
             <h1>Hello World!</h1>
             {% endblock %}
