@@ -72,8 +72,11 @@ def save_question_response(question, justification, user, photo, is_correct):
 
 
 @login_required
-def game(request):
-    game = models.Game.objects.get(id=1) # for now
+def game(request, game_id=None):
+    if game_id is not None:
+        game = models.Game.objects.get(id=game_id)
+    else:
+        game = models.Game.objects.get(id=1) # for now
     if request.method == "GET":
         questions = models.Question.objects.filter(game=game).order_by("order")
         context = {
