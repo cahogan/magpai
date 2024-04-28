@@ -2,4 +2,30 @@
 {% block title %}You won!{% endblock %}
 {% block content %}
     <h1>Congratulations! You won!</h1>
+    <p>Your prize is: <b>{{ game.prize }}</b></p>
+    <h2>Here's how your game went:</h2>
+    {% for question, responses in questions.items %}
+        <h3>{{ question.clue }}</h3>
+        <p>(Expecting answer: {{ question.answer }})</p>
+        <ul>
+        {% for response in responses %}
+            <li class="{% if response.is_correct %}correct{% else %}incorrect{% endif %}">
+                <p>{% if response.is_correct %}
+                        <span class="material-symbols-outlined">
+                            check
+                        </span>
+                    {% else %}
+                        <span class="material-symbols-outlined">
+                            close
+                        </span>
+                    {% endif %}
+                </p>
+                <img src="/media/{{ response.image }}" alt="A scavenger hunt guess">
+                <p>Here's what the judge thought:
+                    <blockquote>{{ response.response }}</blockquote>
+                </p>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
 {% endblock %}

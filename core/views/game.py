@@ -70,6 +70,21 @@ def save_question_response(question, justification, user, photo, is_correct):
     )
     question_response.save()
 
+def build_post_game_collage(user, game):
+    responses = models.QuestionResponse.objects.filter(user=user, question__game=game)
+    # make a dictionary of responses by question
+    responses_by_question = {}
+    for response in responses:
+        if response.question in responses_by_question:
+            responses_by_question[response.question].append(response)
+        else:
+            responses_by_question[response.question] = [response]
+    context = {
+        "game": game,
+        "questions": responses_by_question,
+    }
+    return context
+
 
 @login_required
 def game(request, game_id=None):
@@ -86,7 +101,8 @@ def game(request, game_id=None):
                 try:
                     current_question = models.Question.objects.get(game=game, order=latest_answer.question.order + 1).first()
                 except models.Question.DoesNotExist:
-                    return render(request, "core/complete.html")
+                    context = build_post_game_collage(request.user, game)
+                    return render(request, "core/complete.html", context=context)
             else:
                 current_question = models.Question.objects.filter(game=game, order=latest_answer.question.order).first()
         else:
@@ -109,7 +125,8 @@ def game(request, game_id=None):
             try:
                 next_question = models.Question.objects.get(game=game, order=question.order + 1)
             except models.Question.DoesNotExist:
-                return render(request, "core/complete.html")
+                context = build_post_game_collage(request.user, game)
+                return render(request, "core/complete.html", context)
             else:
                 question = next_question
                 is_correct = None
