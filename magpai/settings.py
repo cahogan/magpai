@@ -24,10 +24,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG")
+if os.getenv("DJANGO_DEBUG"):
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = []
+ROOT_DOMAIN = os.getenv("DJANGO_ROOT_DOMAIN")
 
+ALLOWED_HOSTS = [
+    ROOT_DOMAIN,
+    "localhost"
+]
+
+CSRF_TRUSTED_ORIGINS = [f"https://{ROOT_DOMAIN}"]
 
 # Application definition
 
