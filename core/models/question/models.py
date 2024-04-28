@@ -35,6 +35,7 @@ class QuestionResponse(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     
     # Attributes
+    response = models.TextField(blank=True, null=True)
     image = models.ImageField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     is_correct = models.BooleanField()

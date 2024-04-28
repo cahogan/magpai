@@ -3,6 +3,9 @@ import core.models as models
 from openai import OpenAI
 import json
 from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
+import datetime
+import base64
 
 
 def check_image_matches(base64_image, correct_answer):
@@ -48,6 +51,26 @@ def check_image_matches(base64_image, correct_answer):
         return json_output
 
 
+def convert_base64_to_image(base64_string):
+    image_format, image_string = base64_string.split(";base64,")
+    image_data = base64.b64decode(image_string)
+    current_timestamp = datetime.datetime.now().timestamp()
+    unique_image_filename = f"{current_timestamp}.{image_format.split('/')[1]}"
+    return ContentFile(image_data, name=unique_image_filename)
+
+
+def save_question_response(question, justification, user, photo, is_correct):
+    image_file = convert_base64_to_image(photo)
+    question_response = models.QuestionResponse(
+        question=question,
+        response=justification,
+        user=user,
+        image=image_file,
+        is_correct=is_correct,
+    )
+    question_response.save()
+
+
 @login_required
 def game(request):
     game = models.Game.objects.get(id=1) # for now
@@ -64,6 +87,8 @@ def game(request):
         judge_response = check_image_matches(photo, question.answer)
         is_correct = judge_response["is_match"]
         user_answered = True
+        save_question_response(question, judge_response["justification"],
+                               request.user, photo, is_correct)
         if is_correct:
             try:
                 next_question = models.Question.objects.get(game=game, order=question.order + 1)
