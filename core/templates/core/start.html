@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+{% block title %}Welcome to Magpai{% endblock %}
+{% block content %}
+    <h1>Welcome! You're about to start {{ game.name }}</h1>
+    <h2>Before we start, a few words:</h2>
+    <p>{{ game.intro }}</p>
+    <h2>Pick today's judge</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="judge">Who's the judge today?</label>
+            <select name="judge" id="judge">
+                {% for judge in judges %}
+                    <option value="{{ judge.id }}">{{ judge.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Start the game!</button>
+        </form>
+{% endblock %}

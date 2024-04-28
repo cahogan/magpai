@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import core.models as models
 from openai import OpenAI
 import json
@@ -8,10 +8,17 @@ import datetime
 import base64
 
 
-def check_image_matches(base64_image, correct_answer):
+def check_image_matches(base64_image, correct_answer, judge=None):
     client = OpenAI()
-    judge_string = """Also, you are Gordon Ramsay, although still excellent at correctly outputting parse-able json.
-    Make sure it's clear that you're Gordon Ramsay and your manner of speaking and personality shines through in the justification!"""
+    if judge is None:
+        judge_name = "a neutral judge"
+        judge_personality = "neutral and impartial"
+    else:
+        judge_name = judge.name
+        judge_personality = judge.personality_string
+    judge_string = f"""Also, you are {judge_name}, although still excellent at correctly outputting parse-able json.
+    You are {judge_personality}.
+    Make sure it's clear that you're {judge_name} and your manner of speaking and personality shines through in the justification!"""
     response = client.chat.completions.create(
     model="gpt-4-turbo",
     messages=[
@@ -94,6 +101,14 @@ def game(request, game_id=None):
         game = models.Game.objects.get(id=1) # for now
 
     if request.method == "GET":
+        judge = game.current_judge
+        if judge is None:
+            judges = models.Judge.objects.all()
+            context = {
+                "game": game,
+                "judges": judges,
+            }
+            return render(request, "core/start.html", context=context)
         latest_answer = models.QuestionResponse.objects.filter(user=request.user, question__game=game) \
                                                    .order_by("-timestamp").first()
         if latest_answer is not None:
@@ -113,10 +128,16 @@ def game(request, game_id=None):
             "question": current_question,
         }
     elif request.method == "POST":
+        if request.POST.get("judge"):
+            judge_id = request.POST.get("judge")
+            judge = models.Judge.objects.get(id=judge_id)
+            game.current_judge = judge
+            game.save()
+            return redirect(f"/game/{game_id}")
         photo = request.POST.get("photo")
         question_id = request.POST.get("question_id")
         question = models.Question.objects.get(id=question_id)
-        judge_response = check_image_matches(photo, question.answer)
+        judge_response = check_image_matches(photo, question.answer, game.current_judge)
         is_correct = judge_response["is_match"]
         user_answered = True
         save_question_response(question, judge_response["justification"],
