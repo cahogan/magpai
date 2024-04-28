@@ -35,3 +35,35 @@ button:focus {
     outline-offset: 0.05em;
     box-shadow: none;
 }
+
+nav {
+    font-family: unset;
+    background-color: var(--primary-color);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+nav ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    list-style-type: none;
+    height: 100%;
+}
+
+nav li a {
+    margin-right: 1rem;
+    color: white;
+    text-decoration: none;
+    font-size: 1.5em;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.3s ease;
+    border-radius: 1em
+}
+
+nav ul li a:hover {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+}

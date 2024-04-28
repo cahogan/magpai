@@ -3,10 +3,16 @@
     <head>
         {% load static %}
         <link rel="stylesheet" type=text/css href="{% static 'core/base.css' %}">
+        <link rel="shortcut icon" type="image/svg" href="{% static 'core/favicon.svg' %}"/>
         <title>{% block title %}MagpAI{% endblock %}</title>
     </head>
     <body>
-        <div>
+        <nav>
+            <a href="/" style="padding: 1rem; color: white; font-size: larger; text-decoration: none;">
+                <img src="{% static 'core/magpai_light.svg' %}" height="50px" alt="Magpai logo">
+                MAGPAI
+            </a>
+        </nav>
             {% block content %}
             <h1>Hello World!</h1>
             {% endblock %}
