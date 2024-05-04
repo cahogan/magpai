@@ -9,7 +9,7 @@ def choose_judge(request, game_id):
     try:
         game = models.Game.objects.get(id=game_id)
     except models.Game.DoesNotExist:
-        return redirect("select")
+        return redirect("core:select")
     
     try: 
         judge_id = request.POST.get("judge")
@@ -23,7 +23,7 @@ def choose_judge(request, game_id):
         game.current_judge = judge
         game.save()
 
-    return redirect("game", kwargs={game_id: game_id})
+    return redirect("core:game", game_id=game_id)
 
 
 @login_required
@@ -43,10 +43,10 @@ def start_game(request, game_id=None):
     try:
         game = models.Game.objects.get(id=game_id)
     except models.Game.DoesNotExist:
-        return redirect("select")
-    
+        return redirect("core:select")
+
     if game.current_judge:
-        return redirect("game", kwargs={"game_id": game_id})
+        return redirect("core:game", game_id=game_id)
 
     judges = models.Judge.objects.all()
     context = {

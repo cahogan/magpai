@@ -4,7 +4,7 @@ from django.urls import reverse
 
 
 class TestSelectGameView:
-    SELECT_VIEW_NAME = 'select'
+    SELECT_VIEW_NAME = 'core:select'
 
     @pytest.mark.django_db
     def test_lets_user_select_game(self, authenticated_client):

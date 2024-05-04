@@ -33,7 +33,7 @@ def complete_game(request, game_id=None):
     try:
         game = models.Game.objects.prefetch_related("question_set").get(id=game_id)
     except models.Game.DoesNotExist:
-        return redirect("select")
+        return redirect("core:select")
     
     last_question = models.Question.objects.filter(game=game).order_by('-order').first()
     last_question_answered_correctly = models.QuestionResponse.objects.filter(
@@ -46,4 +46,4 @@ def complete_game(request, game_id=None):
         context = build_post_game_collage(request.user, game)
         return render(request, "core/complete.html", context)
     else:
-        return redirect("game", kwargs={"game_id": game_id})
+        return redirect("core:game", game_id=game_id)
