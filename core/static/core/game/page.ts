@@ -21,7 +21,12 @@ function showCameraVideoFeed(videoElement: HTMLVideoElement) {
 function takePhoto(videoElement: HTMLVideoElement, canvas: HTMLCanvasElement) {
     const context = canvas.getContext('2d')
     if (context) {
-      context.drawImage(videoElement, 0, 0, canvas.width, canvas.height)
+      const aspectRatio = videoElement.clientWidth / videoElement.clientHeight
+      const destWidth = videoElement.clientWidth 
+      const destHeight = destWidth / aspectRatio
+      canvas.width = destWidth
+      canvas.height = destHeight
+      context.drawImage(videoElement, 0, 0, destWidth, destHeight)
     }
   }
 
@@ -55,5 +60,11 @@ if (takePhotoButton) {
     showCanvasInsteadOfVideo(videoElement, canvas)
     const photoData = canvas.toDataURL('image/png')
     addImageToForm(photoData)
+    takePhotoButton.classList.add('hidden')
+    const submitButton = document.getElementById('submit-photo')
+    if (submitButton) {
+      submitButton.classList.remove('hidden')
+    }
+
   })
 }
