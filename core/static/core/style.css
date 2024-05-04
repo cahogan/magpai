@@ -18,12 +18,14 @@ form * {
     margin-bottom: 0.25rem;
 }
 
-button {
+button, input[type=button], input[type=submit] {
     padding: 0.5rem;
     background-color: var(--primary-color);
     color: white;
     border: none;
     cursor: pointer;
+    border-radius: 0.25rem;
+    margin: 0.25rem;
 }
 
 ul {
