@@ -23,7 +23,6 @@ import core.views
 urlpatterns = [
     path('mpadmin/', admin.site.urls),
     path("", core.views.home),
-    path("game/", core.views.game),
-    path('game/<int:game_id>/', core.views.game),
+    path('game/', include("core.urls")),
     path('', include("django.contrib.auth.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

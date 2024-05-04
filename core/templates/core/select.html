@@ -1,0 +1,8 @@
+{% extends 'core/base.html' %}
+{% block title %}Welcome to Magpai{% endblock %}
+{% block content %}
+    <h1>All games</h1>
+    {% for game in games %}
+        <p><a href="/game/start/{{ game.id }}">{{ game.name }}</a></p>
+    {% endfor %}
+{% endblock %}
