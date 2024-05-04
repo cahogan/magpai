@@ -5,6 +5,7 @@ from django.core.files.base import ContentFile
 import datetime
 import base64
 from .judge_submission import check_image_matches
+from django.http import HttpResponseNotFound
 
 
 def convert_base64_to_image(base64_string):
@@ -26,83 +27,34 @@ def save_question_response(question, justification, user, photo, is_correct):
     )
     question_response.save()
 
-def build_post_game_collage(user, game):
-    responses = models.QuestionResponse.objects.filter(user=user, question__game=game)
-    # make a dictionary of responses by question
-    responses_by_question = {}
-    for response in responses:
-        if response.question in responses_by_question:
-            responses_by_question[response.question].append(response)
-        else:
-            responses_by_question[response.question] = [response]
-    context = {
-        "game": game,
-        "questions": responses_by_question,
-    }
-    return context
-
 
 @login_required
-def game(request, game_id=None):
-    if game_id is not None:
-        game = models.Game.objects.get(id=game_id)
+def judge_submission(request, question_id=None):
+    try:
+        question = models.Question.objects.get(id=question_id)
+    except models.Question.DoesNotExist:
+        return HttpResponseNotFound("The submission can't be judged without providing a valid game question.")
     else:
-        game = models.Game.objects.get(id=1) # for now
-
-    if request.method == "GET":
-        judge = game.current_judge
-        if judge is None:
-            judges = models.Judge.objects.all()
-            context = {
-                "game": game,
-                "judges": judges,
-            }
-            return render(request, "core/start.html", context=context)
-        latest_answer = models.QuestionResponse.objects.filter(user=request.user, question__game=game) \
-                                                   .order_by("-timestamp").first()
-        if latest_answer is not None:
-            if latest_answer.is_correct:
-                try:
-                    current_question = models.Question.objects.get(game=game, order=latest_answer.question.order + 1).first()
-                except models.Question.DoesNotExist:
-                    context = build_post_game_collage(request.user, game)
-                    return render(request, "core/complete.html", context=context)
-            else:
-                current_question = models.Question.objects.filter(game=game, order=latest_answer.question.order).first()
-        else:
-            current_question = models.Question.objects.filter(game=game).order_by("order").first()
-
-        context = {
-            "game": game,
-            "question": current_question,
-        }
-    elif request.method == "POST":
-        if request.POST.get("judge"):
-            judge_id = request.POST.get("judge")
-            judge = models.Judge.objects.get(id=judge_id)
-            game.current_judge = judge
-            game.save()
-            return redirect(f"/game/{game_id}")
+        # todo check that game is in progress (has a judge)
         photo = request.POST.get("photo")
         question_id = request.POST.get("question_id")
         question = models.Question.objects.get(id=question_id)
-        judge_response = check_image_matches(photo, question.answer, game.current_judge)
+        judge_response = check_image_matches(photo, question.answer, question.game.current_judge)
         is_correct = judge_response["is_match"]
         user_answered = True
         save_question_response(question, judge_response["justification"],
                                request.user, photo, is_correct)
         if is_correct:
             try:
-                next_question = models.Question.objects.get(game=game, order=question.order + 1)
+                next_question = models.Question.objects.get(game=question.game, order=question.order + 1)
             except models.Question.DoesNotExist:
-                context = build_post_game_collage(request.user, game)
-                return render(request, "core/complete.html", context)
+                return redirect("core:complete", game_id=question.game.id)
             else:
                 question = next_question
                 is_correct = None
                 user_answered = False
         context = {
-            "game": game,
+            "game": question.game,
             "question": question,
             "answer": user_answered,
             "is_correct": is_correct,
@@ -111,3 +63,34 @@ def game(request, game_id=None):
     return render(request, "core/game.html", context)
 
 
+@login_required
+def game(request, game_id=None):
+    try:
+        game = models.Game.objects.get(id=game_id)
+    except models.Game.DoesNotExist:
+        return redirect("core:select")
+    
+    if request.method == "POST":
+        question_id = request.POST.get("question_id")
+        return judge_submission(request, question_id)
+    else:
+        if game.current_judge is None:
+            return redirect("core:start", game_id=game_id)
+        
+        latest_answer = models.QuestionResponse.objects.filter(user=request.user, question__game=game) \
+                                                   .order_by("-timestamp").first()
+        if latest_answer is None:
+            current_question = models.Question.objects.filter(game=game).order_by("order").first()
+        else:
+            if latest_answer.is_correct:
+                try:
+                    current_question = models.Question.objects.get(game=game, order=latest_answer.question.order + 1).first()
+                except models.Question.DoesNotExist:
+                    return redirect("core:complete", game_id=game_id)
+            else:
+                current_question = latest_answer.question
+        context = {
+            "game": game,
+            "question": current_question,
+        }
+    return render(request, "core/game.html", context)
