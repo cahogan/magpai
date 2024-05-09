@@ -12,6 +12,7 @@ pytest = "^8.0.1"
 openai = "^1.23.2"
 psycopg2 = "^2.9.9"
 gunicorn = "^22.0.0"
+pillow = "^10.3.0"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
