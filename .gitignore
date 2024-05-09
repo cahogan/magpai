@@ -2,3 +2,5 @@
 .env.dev
 .venv/
 db.sqlite3
+node_modules/
+**/built/
