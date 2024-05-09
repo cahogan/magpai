@@ -1,0 +1,19 @@
+version: '3.3'
+name: magpai-dev
+
+services:
+  django:
+    build: .
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    env_file:
+      - .env.dev
+    volumes:
+      - .:/magpai
+      - static_volume:/magpai/static
+    entrypoint: >
+      sh -c "python3 -u manage.py runserver 0.0.0.0:8000"
+
+volumes:
+  static_volume:
