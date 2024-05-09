@@ -1,0 +1,47 @@
+version: '3.3'
+name: magpai-prod
+
+services:
+  django:
+    build: .
+    restart: unless-stopped
+    expose:
+      - "8000"
+    env_file:
+      - .env.prod
+    volumes:
+      - .:/magpai
+      - static_volume:/magpai/static
+    entrypoint: >
+      sh -c "gunicorn magpai.wsgi:application --bind 0.0.0.0:8000"
+
+  database:
+    image: postgres:16
+    restart: unless-stopped
+    expose:
+    - "5432"
+    env_file:
+      - .env.prod
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+
+  nginx:
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    build: ./nginx
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - static_volume:/magpai/static
+      - ./docker/nginx/certbot/conf:/etc/letsencrypt
+      - ./docker/nginx/certbot/www:/var/www/certbot
+      - ./docker/nginx/certbot/.secrets:/var/www/.secrets
+    depends_on:
+      - django
+
+volumes:
+  static_volume:
+  postgres_volume:

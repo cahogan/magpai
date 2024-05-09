@@ -24,10 +24,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG")
+if os.getenv("DJANGO_DEBUG"):
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = []
+ROOT_DOMAIN = os.getenv("DJANGO_ROOT_DOMAIN")
 
+ALLOWED_HOSTS = [
+    ROOT_DOMAIN,
+    "localhost"
+]
+
+CSRF_TRUSTED_ORIGINS = [f"https://{ROOT_DOMAIN}"]
 
 # Application definition
 
@@ -76,10 +85,14 @@ WSGI_APPLICATION = 'magpai.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "test"),
+        "USER": os.getenv("POSTGRES_USER", "test"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "test"),
+        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
+        "PORT": os.getenv("POSTGRES_PORT", 5432),
+    },
 }
 
 
@@ -118,8 +131,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Login settings
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/game/"
