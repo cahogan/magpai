@@ -2,7 +2,7 @@
 {% block title %}{{game.name}}{% endblock %}
 {% block content %}
     {% load static %}
-    <h1>Game: {{game.name}}</h1>
+    <h1>{{game.name}}</h1>
     <h2>Question {{ question.order }}</h2>
     <p>{{ question.clue }}</p>
     <video id="camera-feed"></video>

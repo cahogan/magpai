@@ -1,3 +1,27 @@
 .hidden {
     display: none;
 }
+
+video {
+    width: 100%;
+    height: auto;
+}
+
+form {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+form * {
+    margin-bottom: 0.25rem;
+}
+
+button {
+    padding: 0.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
