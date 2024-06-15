@@ -13,7 +13,9 @@ services:
       - .:/magpai
       - static_volume:/magpai/static
     entrypoint: >
-      sh -c "python3 -u manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             python3 -u manage.py runserver 0.0.0.0:8000"
 
   database:
     image: postgres:16
