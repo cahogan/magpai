@@ -8,6 +8,7 @@ function getHtmlSnippet(jsFilename) {
 {% comment %}
 This file was generated with 'npm run build'.
 {% endcomment %}
+{% load static %}
 <script src="{% static '${jsFilename}' %}" type="text/javascript"></script>
 `
   return htmlSnippet
