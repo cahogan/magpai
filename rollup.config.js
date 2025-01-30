@@ -4,30 +4,47 @@ import * as path from "path"
 
 // Find all page.ts files in the project
 // Assumes that page.ts files are in a folder namespaced by the page name
-const entryPoints = glob.sync("**/page.ts").map((file) => {
-  const { dir } = path.parse(file)
-  const pagesParentDir = path.dirname(dir)
-  const pageDir = path.basename(dir)
-  const builtFilePath = path.join(
-    pagesParentDir,
-    "built",
-    pageDir + ".js"
-  )
-  return [file, builtFilePath]
-})
+// We can filter for a particular page to speed up build times
+function getEntryPoints(pageName = undefined) {
+  let pageFilter = "**/page.ts"
+  if (pageName) {
+    console.log(`Building ${pageName}`)
+    pageFilter = `**/${pageName}/page.ts`
+  }
+  const entryPoints = glob.sync(pageFilter).map((file) => {
+    const { dir } = path.parse(file)
+    const pagesParentDir = path.dirname(dir)
+    const pageDir = path.basename(dir)
+    const builtFilePath = path.join(
+      pagesParentDir,
+      "built",
+      pageDir + ".js"
+    )
+    return [file, builtFilePath]
+  })
+  return entryPoints
+}
 
 const plugins = [typescript()]
 
-const rollupConfig = entryPoints.map(([inputFilePath, outputFilePath]) => {
-  return {
-    input: inputFilePath,
-    output: {
-      file: outputFilePath,
-      format: "cjs",
-      sourcemap: true,
-    },
-    plugins,
-  }
-})
+function createConfig(entryPoints) {
+  const rollupConfig = entryPoints.map(([inputFilePath, outputFilePath]) => {
+    return {
+      input: inputFilePath,
+      output: {
+        file: outputFilePath,
+        format: "cjs",
+        sourcemap: true,
+      },
+      plugins,
+    }
+  })
+  return rollupConfig
+}
 
-export default rollupConfig
+// Users can specify configEntrypointFile to filter page to build
+// example: npm run build -- --configEntrypointFile game will build any 'game' pages only
+export default commandLineArgs => {
+  const entryPoints = getEntryPoints(commandLineArgs.configEntrypointFile)
+  return createConfig(entryPoints)
+}
